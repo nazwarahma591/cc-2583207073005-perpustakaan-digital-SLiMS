@@ -1,59 +1,33 @@
-# Ringkasan Materi
+# Perpustakaan Digital SLiMS di VPS
 
-Website peringkas materi berbasis Artificial Intelligence (AI).
+Komputasi Awan, PTI 2802 | Pertemuan 3, Permulaan Proyek
 
-Cloud Computing — PTI 2802 | Pertemuan 3 — Project Inception
+## Deskripsi
+Proyek ini memasang dan mengelola Perpustakaan Digital berbasis SLiMS
+(Senayan Library Management System) di server VPS Azure. SLiMS adalah
+aplikasi open source untuk katalog dan sirkulasi perpustakaan, dibangun
+dengan PHP dan database MySQL/MariaDB.
 
-## Author
+## Status
+- Selesai: repository, dokumentasi awal, aplikasi Flask baseline (M03)
+- Direncanakan: instalasi SLiMS di VPS
+- Belum: HTTPS/domain, backup, container, CI/CD
+
+## Rencana Arsitektur
+Pengguna -> Caddy (reverse proxy) -> PHP-FPM + SLiMS -> MariaDB
+
+## Spesifikasi Server
+- Ubuntu Server 24.04 LTS, VPS Azure
+- 2 vCPU, sekitar 1 GB RAM, disk 61 GB
+
+## Struktur Repository
+- arsip-m03/ : baseline Flask M03 (arsip, tidak dipakai lagi)
+- docs/ : requirements, architecture, deployment, adr
+- .env.example : contoh variabel lingkungan (tanpa secret)
+
+## Catatan Keamanan
+Password database dan secret lain tidak disimpan di repository.
+Gunakan file .env di server (sudah masuk .gitignore).
+
+## Pengarang
 Nazwa / 2583207073005 / 2A
-
-## Problem
-Siswa dan mahasiswa kesulitan memahami materi pembelajaran yang panjang dan
-harus merangkumnya secara manual. Ringkasan Materi merangkum teks, PDF, dan
-dokumen Word secara otomatis dengan bantuan AI.
-
-## Target Users
-Siswa, mahasiswa, dan pengguna umum yang perlu merangkum materi atau dokumen teks.
-
-## Features M03
-- Aplikasi baseline Flask
-- Health endpoint `/health`
-- Deployment di VPS Ubuntu 24.04
-
-## Planned Features
-- Input teks langsung, unggah PDF dan DOCX
-- Pilihan gaya rangkuman (poin penting / paragraf singkat)
-- Rangkuman AI melalui API, salin atau unduh hasil
-- Riwayat rangkuman (opsional)
-
-## Architecture
-
-```mermaid
-flowchart LR
-    U[User] --> C[Caddy] --> G[Gunicorn] --> F[Flask]
-```
-
-Detail: `docs/architecture.md`.
-
-## Infrastructure
-- Ubuntu Server 24.04, Caddy, Gunicorn, systemd, UFW, GitHub
-
-## Public Endpoint
-`http://20.194.24.209/`
-
-## Health Check
-`GET /health`
-
-## Deployment
-Lihat `docs/deployment.md`.
-
-## Security
-- SSH key-only, root login nonaktif, UFW aktif, backend loopback-only
-- API key AI tidak disimpan di repository
-
-## Current Limitations
-- HTTP saja, fitur peringkasan AI belum diimplementasikan
-- Tanpa database, tanpa container, deployment manual
-
-## Roadmap
-M04 DNS/HTTPS, M05 Data dan integrasi AI, M06 Container, M07 IaC, M09 CI/CD
