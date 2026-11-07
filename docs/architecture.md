@@ -1,46 +1,40 @@
-# Architecture v0.1
+# Architecture v0.2
 
-## Deployment View (M03, sudah berjalan)
-
-```mermaid
-flowchart TB
-    I[Internet] --> N[Azure NSG] --> F[UFW] --> C[Caddy :80] --> G[Gunicorn 127.0.0.1:8000] --> A[Flask]
-```
-
-## Target Architecture (produk lengkap, bertahap)
+## Target Architecture (SLiMS di VPS, direncanakan)
 
 ```mermaid
 flowchart LR
-    U[Pengguna / Browser] --> C[Caddy]
-    C --> G[Gunicorn + Flask]
-    G --> X[Ekstraksi teks PDF / DOCX]
-    G --> AI[API layanan AI eksternal]
-    G -.opsional.-> D[(Database riwayat)]
+    I[Internet] --> N[Azure NSG] --> F[UFW] --> C[Caddy :80] --> P[PHP-FPM + SLiMS] --> D[(MariaDB 127.0.0.1)]
 ```
 
-Alur: pengguna memasukkan teks atau mengunggah PDF/DOCX, backend Flask memvalidasi
-input dan mengekstrak teks, teks dikirim ke API AI, lalu hasil rangkuman ditampilkan
-di browser.
+Alur: pengunjung membuka katalog lewat browser, Caddy meneruskan
+request PHP ke PHP-FPM, SLiMS membaca dan menulis data di MariaDB,
+lalu halaman dikirim kembali ke browser.
 
 ## Resource Constraints
 - 2 vCPU, sekitar 1 GB RAM, disk 61 GB, swap 1 GB
-- Pemrosesan AI dilakukan di layanan eksternal, sehingga tidak membebani VPS
+- RAM terbatas: jumlah worker PHP-FPM dan memori MariaDB perlu
+  dikecilkan agar tidak kehabisan memori
 
 ## Security Decisions
 - Administrasi memakai user non-root (cloudstudent)
 - SSH hanya dengan key; password dan root login dimatikan
 - UFW aktif (port 22 dan 80)
-- Backend Gunicorn hanya listen di loopback (127.0.0.1:8000)
+- MariaDB hanya listen di loopback, tidak dibuka ke publik
+- Password admin bawaan SLiMS diganti, folder install dihapus
+- Password database disimpan di server, bukan di repository
 - Deploy key GitHub khusus satu repository
-- API key AI disimpan sebagai environment variable di server, bukan di frontend
 
 ## Current Limitations
-- HTTP saja, satu VPS, belum ada fitur peringkasan AI
-- Belum ada database, container, maupun CI/CD
+- HTTP saja, satu VPS, belum ada backup database
+- SLiMS belum terpasang (status: direncanakan)
 
 ## Planned Evolution
 - M04 DNS + HTTPS
-- M05 integrasi AI dan penyimpanan data (riwayat rangkuman)
+- M05 backup database dan penyimpanan data
 - M06 container
 - M07 infrastructure as code
 - M09 CI/CD
+
+## Riwayat
+Baseline M03 (Flask + Gunicorn) diarsipkan di arsip-m03/.
